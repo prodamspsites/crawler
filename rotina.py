@@ -42,6 +42,10 @@ url_direct = {'pref-sp': 'http://capital.sp.gov.br/',
 
 
 """
+ A função principal executada é a main()
+"""
+
+"""
 FUNCOES UTILIZADAS
 """
 def getTempMedia():
@@ -247,32 +251,54 @@ def main():
     dashboard = db.dashboard
     registro = dashboard.find_one()
 
-    if registro:
-        print('')
-        print('EXCLUINDO REGISTRO PRÉ-EXISTENTE')
-        print(registro)
-        dashboard.delete_one({})
+
     try:
         doc = {}
 
         # Clima
-        weather = getWeatherCapa()
-        doc['temp_media'] = weather['temp_media']
-        doc['potencial'] = weather['potencial']
+        try:
+            weather = getWeatherCapa()
+            doc['temp_media'] = weather['temp_media']
+            doc['potencial'] = weather['potencial']
+        except:
+            print('PROBLEMAS NA RECUPERACAO DE INFORMACOES ACERCA DO CLIMA')
+            doc['temp_media'] = registro['temp_media'] if registro else ''
+            doc['potencial'] = registro['potencial'] if registro else ''
 
         # Qualidade do ar
-        air = airQualityCapa()
-        doc['qualidade_ar'] = air['qualidade_ar']
+        try:
+            air = airQualityCapa()
+            doc['qualidade_ar'] = air['qualidade_ar']
+        except:
+            print('PROBLEMAS NA RECUPERACAO DE INFORMACOES ACERCA DA QUALIDADE DO AR')
+            doc['qualidade_ar'] = registro['qualidade_ar'] if registro else ''
 
         # Trafego
-        traffic = trafficCapa()
-        doc['total_km_lentidao'] = traffic['total_km_lentidao']
-        doc['status_transito_sp'] = traffic['status_transito_sp']
-        doc['traffic_css'] = traffic['css']
+        try:
+            traffic = trafficCapa()
+            doc['total_km_lentidao'] = traffic['total_km_lentidao']
+            doc['status_transito_sp'] = traffic['status_transito_sp']
+            doc['traffic_css'] = traffic['css']
+        except:
+            print('PROBLEMAS NA RECUPERACAO DE INFORMACOES ACERCA DO TRAFEGO')
+            doc['total_km_lentidao'] = registro['total_km_lentidao'] if registro else ''
+            doc['status_transito_sp'] = registro['status_transito_sp'] if registro else ''
+            doc['traffic_css'] = registro['traffic_css'] if registro else ''
 
         # Rodizio
-        rodizio = getRodizioCapa()
-        doc['placa'] = rodizio['placa']
+        try:
+            rodizio = getRodizioCapa()
+            doc['placa'] = rodizio['placa']
+        except:
+            print('PROBLEMAS NA RECUPERACAO DE INFORMACOES ACERCA DO RODIZIO')
+            doc['placa'] = registro['placa'] if registro else ''
+
+        # EXCLUINDO REGISTRO PRÉ-EXISTENTE 
+        if registro:
+            print('')
+            print('EXCLUINDO REGISTRO PRÉ-EXISTENTE')
+            print(registro)
+            dashboard.delete_one({})
         
         # TODO: Implementado  atualizacao do dashboard
         print('')
@@ -289,6 +315,7 @@ def main():
     print('########### FIM PROCESSO DE ATUALIZAÇÃO DO PAINEL DASHBOARD  #################')
     data_hora_fim = strftime("%Y-%m-%d %H:%M:%S", gmtime())
     print('########### DATA E HORA ATUAIS:  ' + data_hora_fim + ' ##############')
+
 
 
 """
