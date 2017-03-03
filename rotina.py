@@ -250,8 +250,7 @@ def main():
     db = mongo_client.prodam
     dashboard = db.dashboard
     registro = dashboard.find_one()
-
-
+    
     try:
         doc = {}
 
@@ -310,7 +309,7 @@ def main():
         print(res.inserted_id)
     except:
         print('ERRO NA ATUALIZAÇÃO DOS REGISTROS')
-
+    
     print('')
     print('########### FIM PROCESSO DE ATUALIZAÇÃO DO PAINEL DASHBOARD  #################')
     data_hora_fim = strftime("%Y-%m-%d %H:%M:%S", gmtime())
